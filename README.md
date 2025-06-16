@@ -10,9 +10,11 @@
 #设置你的用户ID，可以在个人主页的网址获得   
 userid = 2  
 #设置保存路径   
-savepath =  '''song'''  
+savepath =  '''song'''
 
 offset = 0  #从第几个记录开始下载   
 maxindex = 100  #读取多少个记录下载谱面（-1为最大）
 use_sayo = true  #是否使用sayo镜像站下载，设置为false则使用osudirect
+#是否需要视频/故事板
+novideo = false
 ```
