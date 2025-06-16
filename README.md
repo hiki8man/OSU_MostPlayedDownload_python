@@ -1,5 +1,6 @@
 # OSU_MostPlayedDownload_python
 从OSU官网根据你的最多游玩谱面记录下载你游玩过的谱面  
+目前为单线程下载，因为我懒   
 
 # How to Use  
 在python脚本文件所在位置创建一个 config.toml 文件  
