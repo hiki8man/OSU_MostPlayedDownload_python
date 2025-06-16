@@ -36,7 +36,6 @@ class osu_download:
         self.userid : int = 2
         self.savepath  = Path("Song")
         self.maxindex : float = float("inf")
-        self.use_sayo : bool = True
         self.novideo  : bool = False
 
     def start_download(self):
@@ -93,23 +92,10 @@ class osu_download:
             sys.exit()
     
     def get_download_link(self, mapid:int):
-        if self.use_sayo:
-            return self.get_sayo_link(mapid)
-        else:
-            return self.get_osudirect_link(mapid)
-    
-    def get_sayo_link(self, mapid:int):
         if self.novideo:
             return f"https://txy1.sayobot.cn/beatmaps/download/novideo/{mapid}?server=auto"
         else:
             return f"https://txy1.sayobot.cn/beatmaps/download/{mapid}?server=auto"
-    
-    #暂时没用，以后考虑增加检测服务器选择下载分流点    
-    def get_osudirect_link(self, mapid:int):
-        if self.novideo:
-            return f"https://osu.direct/api/d/{mapid}?noVideo"
-        else:
-            return f"https://osu.direct/api/d/{mapid}"
     
     def change_savepath(self, savepath_str:str):
         self.savepath = Path(savepath_str)
@@ -123,8 +109,6 @@ class osu_download:
         self.userid   = config["userid"]   if config["userid"] > 1   else 2
         
         self.savepath = Path(config["savepath"]) if config["savepath"] != "" else Path("Song")
-        
-        self.use_sayo = config["use_sayo"]
         self.novideo  = config["novideo"]
 
 download_tool = osu_download()
