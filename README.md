@@ -1,5 +1,6 @@
 # OSU_MostPlayedDownload_python
-从OSU官网根据你的最多游玩谱面记录下载你游玩过的谱面  
+从OSU官网获取你的最多游玩谱面记录  
+使用sayo镜像站下载你游玩过的谱面    
 目前为单线程下载，因为我懒   
 
 # To Do  
