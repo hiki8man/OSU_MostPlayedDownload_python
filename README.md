@@ -1,2 +1,4 @@
 # OSU_MostPlayedDownload_python
-从OSU官网根据你的最多游玩谱面记录下载你游玩过的谱面
+从OSU官网根据你的最多游玩谱面记录下载你游玩过的谱面  
+---
+# How to Use  
