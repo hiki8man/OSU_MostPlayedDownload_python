@@ -47,6 +47,7 @@ class osu_download:
             print("开始下载……")
             for beatmapdata in mostplayedlist:
                 if beatmapdata["beatmapset"]["id"] in BeatmapIdList:
+                    print("该记录为其他已下载歌曲的难度，跳过下载")
                     continue
                 mapid = beatmapdata["beatmapset"]["id"]
                 filename = sanitize_filename(f"{beatmapdata["beatmapset"]["id"]} {beatmapdata["beatmapset"]["artist"]} - {beatmapdata["beatmapset"]["title"]}.osz")
@@ -125,4 +126,7 @@ class osu_download:
 
 download_tool = osu_download()
 download_tool.read_config("config.toml")
-download_tool.start_download()
+if config["novideo"]:
+    download_tool.start_download(True)
+else:
+    download_tool.start_download()
