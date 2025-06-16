@@ -41,11 +41,11 @@ class osu_download:
 
     def start_download(self):
         ReadNextList = True
-        BeatmapIdList = []
+        BeatmapIdList = set()
         
         while ReadNextList:
+            print(f"用户ID:{self.userid}")
             mostplayedlist,ReadNextList = self.get_mostplayed()
-            print("开始下载……")
             for beatmapdata in mostplayedlist:
                 if beatmapdata["beatmapset"]["id"] in BeatmapIdList:
                     print("该记录为其他已下载歌曲的难度，跳过下载")
@@ -53,7 +53,7 @@ class osu_download:
                 mapid = beatmapdata["beatmapset"]["id"]
                 filename = sanitize_filename(f"{beatmapdata["beatmapset"]["id"]} {beatmapdata["beatmapset"]["artist"]} - {beatmapdata["beatmapset"]["title"]}.osz")
                 self.download_beatmap(mapid, filename)
-                BeatmapIdList.append(mapid)
+                BeatmapIdList.add(mapid)
                 
         print(f"下载完成！已下载 {len(BeatmapIdList)} 个谱面")
         time.sleep(3)
@@ -78,6 +78,7 @@ class osu_download:
             
             count = len(mostplayedlist)
             self.offset += count
+            print("获取数据完成")
             if count < self.limit or self.offset >= self.maxindex:
                 return (mostplayedlist, False)
             else:
