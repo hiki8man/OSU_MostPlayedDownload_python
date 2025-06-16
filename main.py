@@ -37,8 +37,9 @@ class osu_download:
         self.savepath  = Path("Song")
         self.maxindex : float = float("inf")
         self.use_sayo : bool = True
+        self.novideo  : bool = False
 
-    def start_download(self, novideo:bool = False):
+    def start_download(self):
         ReadNextList = True
         BeatmapIdList = []
         
@@ -51,17 +52,17 @@ class osu_download:
                     continue
                 mapid = beatmapdata["beatmapset"]["id"]
                 filename = sanitize_filename(f"{beatmapdata["beatmapset"]["id"]} {beatmapdata["beatmapset"]["artist"]} - {beatmapdata["beatmapset"]["title"]}.osz")
-                self.download_beatmap(mapid, filename, novideo)
+                self.download_beatmap(mapid, filename)
                 BeatmapIdList.append(mapid)
                 
         print(f"下载完成！已下载 {len(BeatmapIdList)} 个谱面")
         time.sleep(3)
     
-    def download_beatmap(self, mapid:int, filename:str, novideo:bool):
+    def download_beatmap(self, mapid:int, filename:str):
         if not self.savepath.is_dir():
             self.savepath.mkdir(parents=True,exist_ok=True)
             
-        download_link = self.get_download_link(mapid,novideo)
+        download_link = self.get_download_link(mapid)
         file_savepath  = self.savepath.joinpath(filename)
         
         wget.download_file(url=download_link, output_path=file_savepath)
@@ -90,21 +91,21 @@ class osu_download:
             print(f"Error response {exc.response.status_code} while requesting {exc.request.url!r}.")
             sys.exit()
     
-    def get_download_link(self, mapid:int, novideo:bool):
+    def get_download_link(self, mapid:int):
         if self.use_sayo:
-            return self.get_sayo_link(mapid, novideo)
+            return self.get_sayo_link(mapid)
         else:
-            return self.get_osudirect_link(mapid, novideo)
+            return self.get_osudirect_link(mapid)
     
-    def get_sayo_link(self, mapid:int, novideo:bool):
-        if novideo:
+    def get_sayo_link(self, mapid:int):
+        if self.novideo:
             return f"https://txy1.sayobot.cn/beatmaps/download/novideo/{mapid}?server=auto"
         else:
             return f"https://txy1.sayobot.cn/beatmaps/download/{mapid}?server=auto"
     
     #暂时没用，以后考虑增加检测服务器选择下载分流点    
-    def get_osudirect_link(self, mapid:int, novideo:bool):
-        if novideo:
+    def get_osudirect_link(self, mapid:int):
+        if self.novideo:
             return f"https://osu.direct/api/d/{mapid}?noVideo"
         else:
             return f"https://osu.direct/api/d/{mapid}"
@@ -121,12 +122,10 @@ class osu_download:
         self.userid   = config["userid"]   if config["userid"] > 1   else 2
         
         self.savepath = Path(config["savepath"]) if config["savepath"] != "" else Path("Song")
-        self.use_sayo = config["use_sayo"]
         
+        self.use_sayo = config["use_sayo"]
+        self.novideo  = config["novideo"]
 
 download_tool = osu_download()
 download_tool.read_config("config.toml")
-if config["novideo"]:
-    download_tool.start_download(True)
-else:
-    download_tool.start_download()
+download_tool.start_download()
