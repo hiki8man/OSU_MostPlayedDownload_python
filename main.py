@@ -29,6 +29,12 @@ def sanitize_filename(filename: str) -> str:
     return sanitized
 
 class osu_download:
+    
+    SayoServerList = {0:"auto",
+                      1:"Telecom",2:"cmcc",3:"unicom",
+                      4:"CDN",
+                      5:"DE",6:"USA"}
+    
     def __init__(self):
         self.offset : int = 0
         self.limit  : int = 50
@@ -37,6 +43,7 @@ class osu_download:
         self.savepath  = Path("Song")
         self.maxindex : float = float("inf")
         self.novideo  : bool = False
+        self.sayoserver : str = "auto"
 
     def start_download(self):
         ReadNextList = True
@@ -58,13 +65,17 @@ class osu_download:
         time.sleep(3)
     
     def download_beatmap(self, mapid:int, filename:str):
-        if not self.savepath.is_dir():
-            self.savepath.mkdir(parents=True,exist_ok=True)
+        try:
+            if not self.savepath.is_dir():
+                self.savepath.mkdir(parents=True,exist_ok=True)
+                
+            download_link = self.get_download_link(mapid)
+            file_savepath  = self.savepath.joinpath(filename)
+            wget.download_file(url=download_link, output_path=file_savepath, max_tries=3)
             
-        download_link = self.get_download_link(mapid)
-        file_savepath  = self.savepath.joinpath(filename)
-        
-        wget.download_file(url=download_link, output_path=file_savepath)
+        except RuntimeError as e:
+            print(f"{mapid} 下载失败！这可能是因为服务器故障或者歌曲被版权警告")
+
             
     def get_mostplayed(self) ->tuple[list,bool]:
         if (self.limit + self.offset) > self.maxindex:
@@ -93,9 +104,9 @@ class osu_download:
     
     def get_download_link(self, mapid:int):
         if self.novideo:
-            return f"https://txy1.sayobot.cn/beatmaps/download/novideo/{mapid}?server=auto"
+            return f"https://txy1.sayobot.cn/beatmaps/download/novideo/{mapid}?server={self.sayoserver}"
         else:
-            return f"https://txy1.sayobot.cn/beatmaps/download/{mapid}?server=auto"
+            return f"https://txy1.sayobot.cn/beatmaps/download/{mapid}?server=auto{self.sayoserver}"
     
     def change_savepath(self, savepath_str:str):
         self.savepath = Path(savepath_str)
@@ -110,6 +121,7 @@ class osu_download:
         
         self.savepath = Path(config["savepath"]) if config["savepath"] != "" else Path("Song")
         self.novideo  = config["novideo"]
+        self.sayoserver  = self.SayoServerList.get(config["sayoserver"],"auto")
 
 download_tool = osu_download()
 download_tool.read_config("config.toml")
